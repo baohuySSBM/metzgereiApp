@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Planungstool für Metzgerei & Einkauf</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #ffeee8;
+      background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+      animation: pulseBg 20s ease-in-out infinite;
+    }
+
+    @keyframes pulseBg {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.02); }
+    }
+
+    h1 {
+      background: white;
+      border: 4px dashed brown;
+      padding: 15px 25px;
+      border-radius: 35px;
+      text-align: center;
+      font-size: 2rem;
+      color: #b22222;
+      margin-bottom: 40px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .box {
+      background: white;
+      border: 2px solid #aa2c2c;
+      border-radius: 15px;
+      padding: 20px;
+      width: 320px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #a32020;
+    }
+
+    input, button {
+      font-size: 1rem;
+      padding: 10px;
+      margin-top: 10px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #a32020;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #821919;
+    }
+
+    ul {
+      margin-top: 15px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 200px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .info {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 700px) {
+      .box {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🥩 Planungstool für Metzgerei & Einkauf</h1>
+
+  <div class="container">
+    <div class="box">
+      <h2>📅 Kalender</h2>
+      <input type="date" id="datum">
+      <p class="info">Bitte ein Datum auswählen</p>
+    </div>
+
+    <div class="box">
+      <h2>🛒 Einkaufsliste</h2>
+      <input type="text" id="produktInput" placeholder="Produkt eingeben...">
+      <button onclick="produktHinzufuegen()">Hinzufügen</button>
+      <ul id="einkaufsliste"></ul>
+    </div>
+
+    <div class="box">
+      <h2>📍 Nahegelegene Metzgereien</h2>
+      <button onclick="standortAbrufen()">📡 Standort ermitteln</button>
+      <p class="info" id="standortInfo">Standort nicht geladen</p>
+      <iframe
+        id="mapFrame"
+        src="https://www.google.com/maps/embed/v1/search?key=YOUR_GOOGLE_MAPS_API_KEY&q=Metzgerei"
+        allowfullscreen>
+      </iframe>
+    </div>
+
+    <div class="box">
+      <h2>⏰ Öffnungszeiten</h2>
+      <ul>
+        <li>Mo-Fr: 08:00 - 18:00 Uhr</li>
+        <li>Samstag: 08:00 - 13:00 Uhr</li>
+        <li>Sonntag: geschlossen</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    function produktHinzufuegen() {
+      const input = document.getElementById('produktInput');
+      const value = input.value.trim();
+      if (value) {
+        const li = document.createElement('li');
+        li.textContent = value;
+        document.getElementById('einkaufsliste').appendChild(li);
+        input.value = '';
+      }
+    }
+
+    function standortAbrufen() {
+      const info = document.getElementById('standortInfo');
+      info.textContent = "📡 Standort wird ermittelt...";
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          info.textContent = `📍 Dein Standort: ${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+          const map = document.getElementById('mapFrame');
+          map.src = `https://www.google.com/maps/embed/v1/search?key=YOUR_GOOGLE_MAPS_API_KEY&q=Metzgerei&center=${lat},${lon}&zoom=14`;
+        }, (error) => {
+          info.textContent = "❌ Standort konnte nicht ermittelt werden.";
+          console.error(error);
+        });
+      } else {
+        info.textContent = "❌ Geolocation wird von deinem Browser nicht unterstützt.";
+      }
+    }
+  </script>
+</body>
+</html>
